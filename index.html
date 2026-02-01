@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine?</title>
+  <style>
+    :root {
+      --bg1: #ffdde1;
+      --bg2: #ee9ca7;
+      --card: rgba(255,255,255,0.75);
+      --shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      overflow: hidden;
+    }
+    .card {
+      width: min(520px, 92vw);
+      padding: 28px 22px;
+      border-radius: 22px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      margin: 6px 0 10px;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+    p {
+      margin: 0 0 18px;
+      opacity: 0.85;
+    }
+    .arena {
+      position: relative;
+      height: 190px;
+      margin-top: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.55);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .btn {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+      user-select: none;
+      touch-action: manipulation;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.10);
+    }
+    .btn:active { transform: scale(0.98); }
+    #yesBtn {
+      background: #22c55e;
+      color: white;
+      position: absolute;
+      left: 28%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+    }
+    #noBtn {
+      background: #ef4444;
+      color: white;
+      position: absolute;
+      left: 72%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+    }
+    .result {
+      margin-top: 14px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+    .tiny {
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Hey Pilli!!! <br>Will you be my Valentine? 💘</h1>
+    <p>Choose wisely 😄</p>
+
+    <div class="arena" id="arena" aria-label="valentine question area">
+      <button class="btn" id="yesBtn">Yes</button>
+      <button class="btn" id="noBtn">No</button>
+    </div>
+
+    <div class="result" id="result" aria-live="polite"></div>
+    <div class="tiny">Tip: try to click “No” 😉</div>
+  </div>
+
+  <script>
+    const arena = document.getElementById('arena');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn  = document.getElementById('noBtn');
+    const result = document.getElementById('result');
+
+    let noMoves = 0;
+
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+    function moveNoButton() {
+      const a = arena.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+
+      const pad = 12; // keep it inside the arena
+      const maxX = a.width - b.width - pad;
+      const maxY = a.height - b.height - pad;
+
+      const x = Math.random() * maxX + pad/2;
+      const y = Math.random() * maxY + pad/2;
+
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
+      noBtn.style.transform = 'translate(0, 0)';
+
+      noMoves++;
+      if (noMoves >= 6) {
+        noBtn.textContent = "Please? 😭";
+      }
+      if (noMoves >= 10) {
+        noBtn.textContent = "Ok fine 😅";
+      }
+    }
+
+    // Desktop: dodge on hover / mousemove near it
+    noBtn.addEventListener('mouseenter', moveNoButton);
+    noBtn.addEventListener('mousemove', moveNoButton);
+
+    // Mobile: dodge on touchstart (before click)
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    // If someone actually clicks No (very rare), still keep it playful
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    yesBtn.addEventListener('click', () => {
+      result.textContent = "Yayyyy! 💖 I knew it. Lovuuu! Happy Valentine’s!";
+      // Optional: lock the buttons after Yes
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      yesBtn.style.opacity = "0.8";
+      noBtn.style.opacity = "0.6";
+    });
+
+    // Start positions in pixels (so future moves can use px)
+    (function init() {
+      const a = arena.getBoundingClientRect();
+      // Place buttons nicely once loaded
+      yesBtn.style.left = (a.width * 0.32) + 'px';
+      yesBtn.style.top  = (a.height * 0.58) + 'px';
+      yesBtn.style.transform = 'translate(0, 0)';
+      noBtn.style.left = (a.width * 0.62) + 'px';
+      noBtn.style.top  = (a.height * 0.58) + 'px';
+      noBtn.style.transform = 'translate(0, 0)';
+    })();
+
+    // Keep layout stable on resize
+    window.addEventListener('resize', () => {
+      // Do nothing fancy; optional: reset No to a safe spot
+      // moveNoButton();
+    });
+  </script>
+</body>
+</html>
