@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Amma 💖</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:linear-gradient(135deg,#ffeaf4,#ffd6e7);
+  overflow:hidden;
+}
+
+/* ===============================
+   DARK PINK FLOATING HEARTS
+================================ */
+.hearts{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+
+.heart{
+  position:absolute;
+  width:18px;height:18px;
+  background:#c2185b;
+  transform:rotate(45deg);
+  opacity:.6;
+  animation:floatUp linear infinite;
+}
+
+.heart:before,.heart:after{
+  content:"";
+  position:absolute;
+  width:18px;height:18px;
+  background:#c2185b;
+  border-radius:50%;
+}
+
+.heart:before{left:-9px}
+.heart:after{top:-9px}
+
+@keyframes floatUp{
+  from{transform:translateY(0) rotate(45deg)}
+  to{transform:translateY(-120vh) rotate(45deg)}
+}
+
+/* ===============================
+   CARD
+================================ */
+.card{
+  position:relative;
+  z-index:1;
+  width:min(650px,95vw);
+  background:rgba(255,255,255,.92);
+  border-radius:28px;
+  padding:20px;
+  box-shadow:0 25px 80px rgba(0,0,0,.18);
+  text-align:center;
+}
+
+/* header */
+.top{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  text-align:left;
+}
+
+.photoSmall{
+  width:90px;height:90px;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.photoSmall img{
+  width:100%;height:100%;object-fit:cover;
+}
+
+/* BIG PHOTO */
+.bigPhoto{
+  display:none;
+  margin-top:10px;
+}
+
+.bigPhoto img{
+  width:100%;
+  max-height:420px;
+  object-fit:cover;
+  border-radius:22px;
+  box-shadow:0 18px 45px rgba(0,0,0,.25);
+}
+
+/* ===============================
+   TIP MESSAGE (NEW)
+================================ */
+.tip{
+  margin-top:12px;
+  font-size:18px;
+  font-weight:700;
+  color:#c2185b;
+  animation:pulse 1.4s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
+
+/* buttons area */
+.arena{
+  position:relative;
+  height:220px;
+  margin-top:18px;
+  border-radius:20px;
+  background:#f3f3f3;
+}
+
+.btn{
+  position:absolute;
+  border:none;
+  padding:12px 22px;
+  border-radius:999px;
+  font-size:16px;
+  color:#fff;
+  cursor:pointer;
+}
+
+#yesBtn{
+  background:#22c55e;
+  left:30%; top:60%;
+  transform:translate(-50%,-50%);
+}
+
+#noBtn{
+  background:#ef4444;
+  left:70%; top:60%;
+  transform:translate(-50%,-50%);
+}
+
+.result{
+  margin-top:18px;
+  font-size:22px;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="top" id="headerTop">
+    <div class="photoSmall">
+      <img src="./assets/mom.jpg">
+    </div>
+    <div>
+      <h2>Amma, do you love me? 💖</h2>
+      <div>I made this just for you 😊</div>
+    </div>
+  </div>
+
+  <!-- 👇 NEW TIP -->
+  <div class="tip" id="tipText">👉 Tip: Try clicking NO 😄</div>
+
+  <!-- BIG PHOTO -->
+  <div class="bigPhoto" id="bigPhoto">
+    <img src="./assets/mom1.jpg">
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="arena" id="arenaWrap">
+    <button id="yesBtn" class="btn">Yes</button>
+    <button id="noBtn" class="btn">No</button>
+  </div>
+
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+/* hearts generator */
+const hearts=document.getElementById("hearts");
+for(let i=0;i<25;i++){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.style.left=Math.random()*100+"vw";
+  h.style.bottom="-20px";
+  h.style.animationDuration=(6+Math.random()*6)+"s";
+  hearts.appendChild(h);
+}
+
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const result=document.getElementById("result");
+const headerTop=document.getElementById("headerTop");
+const arenaWrap=document.getElementById("arenaWrap");
+const bigPhoto=document.getElementById("bigPhoto");
+const tipText=document.getElementById("tipText");
+
+let noMoves=0;
+
+/* NO button behavior */
+function moveNo(){
+  const box=arenaWrap.getBoundingClientRect();
+
+  const x=Math.random()*(box.width-100);
+  const y=Math.random()*(box.height-60);
+
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
+  noBtn.style.transform="none";
+
+  noMoves++;
+
+  if(noMoves===3) noBtn.textContent="Amma pls 😭";
+  if(noMoves===6) noBtn.textContent="Ayyo 😅";
+  if(noMoves===9) noBtn.textContent="Ok! fine 😅";
+}
+
+noBtn.addEventListener("mouseenter",moveNo);
+noBtn.addEventListener("click",e=>{e.preventDefault();moveNo();});
+
+/* YES click */
+yesBtn.addEventListener("click",()=>{
+  headerTop.style.display="none";
+  arenaWrap.style.display="none";
+  tipText.style.display="none";   /* hide tip after yes */
+  bigPhoto.style.display="block";
+  result.textContent="Amma I love you toooooo 💕😘";
+});
+</script>
+
+</body>
+</html>
